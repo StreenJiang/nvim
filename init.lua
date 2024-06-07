@@ -84,6 +84,10 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
+-- Encoding
+vim.g.encoding = 'utf-8'
+vim.g.fileencoding = 'utf-8'
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -91,7 +95,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +106,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -189,6 +193,15 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '+', '<C-w>>', { desc = '' })
+vim.keymap.set('n', '_', '<C-w><', { desc = '' })
+vim.keymap.set('n', '<A-=>', '<C-w>+', { desc = '' })
+vim.keymap.set('n', '<A-->', '<C-w>-', { desc = '' })
+
+-- Key maps for GitSigns
+vim.keymap.set('n', '<leader>gp', ':Gitsigns preview_hunk<CR>', { desc = '[G]itsigns [p]review_hunk' })
+vim.keymap.set('n', '<leader>gd', ':Gitsigns diffthis<CR>', { desc = '[G]itsigns [d]iffthis' })
+vim.keymap.set('n', '<leader>gb', ':Gitsigns toggle_current_line_blame<CR>', { desc = '[G]itsigns toggle_current_line_[b]lame' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -249,11 +262,11 @@ require('lazy').setup({
     'lewis6991/gitsigns.nvim',
     opts = {
       signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
+        -- add = { text = '+' },
+        -- change = { text = '~' },
+        -- delete = { text = '_' },
+        -- topdelete = { text = '‾' },
+        -- changedelete = { text = '~' },
       },
     },
   },
@@ -353,11 +366,18 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          --   mappings = {
+          --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          --   },
+          layout_strategy = 'vertical',
+          layout_config = {
+            vertical = {
+              width = 0.9,
+              preview_cutoff = 0,
+            },
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -388,7 +408,12 @@ require('lazy').setup({
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
-          previewer = false,
+          previewer = true,
+          layout_config = {
+            center = {
+              width = 0.7,
+            },
+          },
         })
       end, { desc = '[/] Fuzzily search in current buffer' })
 
@@ -472,7 +497,15 @@ require('lazy').setup({
           map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('gr', function()
+            require('telescope.builtin').lsp_references {
+              path_display = function(opts, path)
+                local smartPath = require('telescope.utils').path_smart(path)
+                return string.format('%s', smartPath), { { { 1, #smartPath }, 'Constant' } }
+              end,
+              fname_width = 100,
+            }
+          end, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
@@ -730,6 +763,8 @@ require('lazy').setup({
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
           ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<TAB>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -778,16 +813,17 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+    'EdenEast/nightfox.nvim',
+    priority = 1000,
+    config = function()
+      require('nightfox').setup {
+        options = {
+          dim_inactive = true,
+          transparent = true,
+        },
+      }
+      vim.cmd.colorscheme 'Nightfox'
+      -- vim.cmd.colorscheme 'Dayfox'
     end,
   },
 
@@ -885,7 +921,7 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
