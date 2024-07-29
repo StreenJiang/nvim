@@ -85,8 +85,11 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
 -- Encoding
+vim.scriptencoding = 'utf-8'
 vim.g.encoding = 'utf-8'
 vim.g.fileencoding = 'utf-8'
+vim.opt.encoding = 'utf-8'
+vim.opt.fileencoding = 'utf-8'
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -527,6 +530,7 @@ require('lazy').setup({
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
           map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+          map('<F2>', vim.lsp.buf.rename, '[R]e[n]ame')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.

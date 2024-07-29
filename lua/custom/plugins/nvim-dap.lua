@@ -43,6 +43,8 @@ return {
     -- vim.keymap.set('n', '<Leader>df', function() require('dap.ui.widgets').centered_float(widgets.frames) end, {desc = ""})
     -- vim.keymap.set('n', '<Leader>ds', function() require('dap.ui.widgets').centered_float(widgets.scopes) end, {desc = ""})
 
+    local debuggerHome = os.getenv 'USERPROFILE' .. '/AppData/Local/nvim-data/mason/packages'
+
     require('mason-nvim-dap').setup {
       ensure_installed = { 'netcoredbg', 'python' },
       handlers = {
@@ -55,7 +57,7 @@ return {
         coreclr = function(config)
           config.adapters = {
             type = 'executable',
-            command = os.getenv 'USERPROFILE' .. '/AppData/Local/nvim-data/mason/packages/netcoredbg/netcoredbg/netcoredbg',
+            command = debuggerHome .. '/netcoredbg/netcoredbg/netcoredbg',
             args = {
               '--interpreter=vscode',
             },
@@ -65,7 +67,7 @@ return {
         python = function(config)
           config.adapters = {
             type = 'executable',
-            command = os.getenv 'USERPROFILE' .. '/AppData/Local/nvim-data/mason/packages/debugpy/venv/Scripts/python',
+            command = debuggerHome .. '/debugpy/venv/Scripts/python',
             args = {
               '-m',
               'debugpy.adapter',
@@ -126,12 +128,20 @@ return {
         name = 'launch - netcoredbg',
         request = 'launch',
         program = function()
-          local path_to_dll = vim.fn.getcwd() .. '\\OperationGuidance_new\\bin\\Debug\\net6.0-windows\\OperationGuidance_new.dll'
-          -- local path_to_dll = vim.fn.getcwd() .. '\\ControllerTest\\bin\\Debug\\net6.0-windows\\ControllerTest.dll'
-          -- local path_to_dll = vim.fn.getcwd() .. '\\ArmTest\\bin\\Debug\\net6.0-windows\\ArmTest.dll'
-          -- local path_to_dll = vim.fn.getcwd() .. '\\SerialPortTest\\bin\\Debug\\net6.0-windows\\SerialPortTest.dll'
-          return path_to_dll
-          -- return 'D:\\VisualStudioProjects\\C#\\OperationGuidance_new\\OperationGuidance_new\\bin\\Debug\\net6.0-windows\\OperationGuidance_new.dll'
+          -- local path_to_dll = vim.fn.getcwd() .. '\\OperationGuidance_new\\bin\\Debug\\net6.0-windows\\OperationGuidance_new.dll'
+          -- return path_to_dll
+          -- -- return 'D:\\VisualStudioProjects\\C#\\OperationGuidance_new\\OperationGuidance_new\\bin\\Debug\\net6.0-windows\\OperationGuidance_new.dll'
+
+          local projectPath = vim.fn.getcwd()
+          local projectName = projectPath:match '([^\\\\]+)$'
+          local consoleAppPath = projectPath .. '/' .. projectName .. '/bin/Debug/net6.0/' .. projectName .. '.dll'
+          local desktopAppPath = projectPath .. '/' .. projectName .. '/bin/Debug/net6.0-windows/' .. projectName .. '.dll'
+          local isConsoleApp = io.open(consoleAppPath)
+          if isConsoleApp then
+            return consoleAppPath
+          else
+            return desktopAppPath
+          end
         end,
       },
     }
