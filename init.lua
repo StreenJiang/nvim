@@ -111,6 +111,10 @@ vim.opt.number = true
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
 
+-- Set tabstop
+vim.opt.tabstop = 4
+vim.g.tabstop = 4
+
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
@@ -202,7 +206,8 @@ vim.keymap.set('n', '<A-=>', '<C-w>+', { desc = '' })
 vim.keymap.set('n', '<A-->', '<C-w>-', { desc = '' })
 
 -- Key maps for GitSigns
-vim.keymap.set('n', '<leader>gp', ':Gitsigns preview_hunk<CR>', { desc = '[G]itsigns [p]review_hunk' })
+vim.keymap.set('n', '<leader>gp', ':Gitsigns prev_hunk<CR>', { desc = '[G]itsigns [p]review_hunk' })
+vim.keymap.set('n', '<leader>gn', ':Gitsigns next_hunk<CR>', { desc = '[G]itsigns [p]review_hunk' })
 vim.keymap.set('n', '<leader>gd', ':Gitsigns diffthis<CR>', { desc = '[G]itsigns [d]iffthis' })
 vim.keymap.set('n', '<leader>gb', ':Gitsigns toggle_current_line_blame<CR>', { desc = '[G]itsigns toggle_current_line_[b]lame' })
 
