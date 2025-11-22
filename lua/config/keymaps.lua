@@ -20,9 +20,9 @@ map.set("n", "<A-=>", "<C-w>+", { desc = "" })
 map.set("n", "<A-->", "<C-w>-", { desc = "" })
 
 -- Tab
-map.set("n", "<c-n>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next Buffer" })
-map.set("n", "<c-p>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev Buffer" })
-map.set("n", "<c-c>", "<cmd>bdelete!<cr>", { desc = "Close Buffer" })
+-- map.set("n", "<c-n>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next Buffer" })
+-- map.set("n", "<c-p>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev Buffer" })
+-- map.set("n", "<c-c>", "<cmd>bdelete!<cr>", { desc = "Close Buffer" })
 --   { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle Pin" },
 --   { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete Non-Pinned Buffers" },
 --   { "<leader>br", "<Cmd>BufferLineCloseRight<CR>", desc = "Delete Buffers to the Right" },
